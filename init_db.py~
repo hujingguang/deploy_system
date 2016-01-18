@@ -1,0 +1,4 @@
+from app import app,db
+from app.models import User
+def init_db_user():
+     

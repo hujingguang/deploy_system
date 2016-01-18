@@ -1,0 +1,35 @@
+{% extends "bootstrap/base.html" %}
+{%block title %}每天惠版本发布系统 {% endblock %}
+{%block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation </span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {%block banner %}
+            <a class="navbar-brand" >每天惠</a>
+            {%endblock%}
+        </div>
+        {% block home %}
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+        {%endblock%}
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div class="container" style="width:95%">
+     {% block page_content %}
+     {% endblock %}
+ </div>
+{%endblock%}
+

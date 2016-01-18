@@ -1,0 +1,27 @@
+#!/usr/bin/python
+from flask import Flask,render_template,request,session
+from flask.ext.bootstrap import Bootstrap
+from 
+app=Flask(__name__)
+bootstrap=Bootstrap(app)
+
+@app.route('/')
+def index():
+    from forms import LoginForm
+    form=LoginForm()
+    if form.validate_on_submit():
+        session
+    return render_template('login.html')
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == 'admin' and request.form['password']=='123123':
+            return render_template("home.html")
+    return render_template("login.html")
+
+@app.route('/addrepos')
+def add_repos():
+    return render_template("add-repos.html")
+if __name__=='__main__':
+    app.run(host='120.24.239.32',port=8080)

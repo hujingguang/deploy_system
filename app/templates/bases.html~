@@ -1,2 +1,0 @@
-{% extends "bootstrap/base.html" %}
-{%block title %}每天惠版本发布系统 {% endblock %}

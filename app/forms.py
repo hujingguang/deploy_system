@@ -11,8 +11,8 @@ class ReposForm(Form):
     repo_address=StringField('Repo_Address',validators=[DataRequired("Please enter full url for Repository")])
     repo_user=StringField('Repo_Address',validators=[DataRequired("Please enter user")])
     repo_passwd=PasswordField('Repo_Passwd',validators=[DataRequired("Please enter password")])
-    local_checkout_dir=StringField('local_checkout_dir',validators=[Regexp('^/.*'),DataRequired("Please enter local checkout dir")])
-    remote_deploy_url=StringField('Remote_Deploy_Url',validators=[DataRequired("Please enter remote deploy path")])
+    local_checkout_path=StringField('local_checkout_dir',validators=[Regexp('^/.*'),DataRequired("Please enter local checkout dir")])
+    remote_deploy_path=StringField('Remote_Deploy_Url',validators=[DataRequired("Please enter remote deploy path")])
     repo_type=SelectField('Repo_Type',choices=[('svn','Svn'),('git','Git')])
 
 

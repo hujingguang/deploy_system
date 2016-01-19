@@ -34,11 +34,11 @@ class RepoInfo(db.Model):
     uid=db.Column(db.Integer,primary_key=True)
     repo_name=db.Column(db.String(120),unique=True)
     repo_address=db.Column(db.String(120))
-    repo_user=db.Column(db.String(50))
-    repo_passwd=db.Column(db.String(50))
-    local_checkout_path=db.Column(db.String(50))
-    repo_type=db.Column(db.String(50))
-    remote_deploy_path=db.Column(db.String(50))
+    repo_user=db.Column(db.String(100))
+    repo_passwd=db.Column(db.String(100))
+    local_checkout_path=db.Column(db.String(100))
+    repo_type=db.Column(db.String(100))
+    remote_deploy_path=db.Column(db.String(100))
     def __init__(self,repo_name,repo_address,repo_user,repo_passwd,local_checkout_path,repo_type,remote_deploy_path):
         self.repo_name=repo_name
         self.repo_address=repo_address
@@ -46,6 +46,7 @@ class RepoInfo(db.Model):
         self.local_checkout_path=local_checkout_path
         self.repo_type=repo_type
         self.repo_passwd=repo_passwd
+        self.remote_deploy_path=remote_deploy_path
     def is_authenticated(self):
         return True
     def is_active(self):

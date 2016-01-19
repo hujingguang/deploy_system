@@ -5,7 +5,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager,login_user,logout_user,current_user,login_required
 from app import app,db,lm
-from app.models import User
+from app.models import User,RepoInfo
 bootstrap=Bootstrap(app)
 
 @lm.user_loader
@@ -29,15 +29,21 @@ def index():
 @login_required
 def add_repos():
     from forms import ReposForm
-    repo_form=ReposForm()
+    form=ReposForm()
     if request.method=='GET':
-        return render_template('add-repo.html',form=repo_form)
-    if repo_form.validate_on_submit():
-
-        return render_template('ok.html') 
+        return render_template('add-repo.html',form=form)
+    if form.validate_on_submit():
+        repo=RepoInfo.query.filter_by(repo_name=form.repo_name.data.lower()).first()
+        if repo is not None:
+            form.repo_name.errors.append("the repo has exist !!")
+            return render_template('add-repo.html',form=form)
+        repo=RepoInfo(form.repo_name.data,form.repo_address.data,form.repo_user.data,form.repo_passwd.data,form.local_checkout_path.data,form.repo_type.data,form.remote_deploy_path.data)
+        db.session.add(repo)
+        db.session.commit()
+        return redirect(url_for('index')) 
     else:
-        return render_template('add-repo.html',form=repo_form,failed_auth=True) 
-    return render_template('add-repo.html',form=repo_form)
+        return render_template('add-repo.html',form=form,failed_auth=True) 
+    return render_template('add-repo.html',form=form)
 
 
 

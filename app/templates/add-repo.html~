@@ -1,0 +1,77 @@
+{%extends "home.html" %}
+
+{% block form_content %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+    </div>
+    <div class="panel-body">
+      <div style="margin-left:200px;">
+<form action="{{ url_for('add_repos') }}" method="post">
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td><b>版本库名:</b></td>
+      <td>{{ form.repo_name(size=20, class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><b>版本库地址:&nbsp;&nbsp;</b></td>
+      <td>{{ form.repo_address(size=20, class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><b>远程库用户:&nbsp;&nbsp;</b></td>
+        <td>{{form.repo_user(size=20,class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>远程库密码:&nbsp;&nbsp;</td>
+      <td>{{form.repo_passwd(size=20,class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>本地checkout目录:&nbsp;&nbsp;</td>
+      <td>{{form.local_checkout_dir(size=20,class="form-control")}}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>正式环境路径:&nbsp;&nbsp;</td>
+      <td>{{form.remote_deploy_url(size=20,class="form-control")}}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>版本库类型&nbsp;&nbsp;</td>
+      <td>{{form.repo_type(size=1,class="form-control")}}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;&nbsp;&nbsp;</td>
+      <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" class="btn btn-primary" name="do_action" value="create" >提交</button></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  {% if failed_auth %}
+    <div class="alert alert-danger" role="alert">
+      <b>ERROR:</b> please input all choice !!
+    </div>
+  {% endif %}
+</form>
+</div>
+</div>
+</div>
+
+{% endblock %}

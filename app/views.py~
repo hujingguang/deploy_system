@@ -30,8 +30,6 @@ def index():
 def add_repos():
     from forms import ReposForm
     repo_form=ReposForm()
-    if request.method=='GET':
-        return render_template('add-repo.html',form=repo_form)
     if repo_form.validate_on_submit():
 
         return render_template('ok.html') 

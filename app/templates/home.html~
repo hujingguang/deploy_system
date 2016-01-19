@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="col-md-10">
-            {% block form_content %}
+            {% block form %}
             {%endblock%}
         </div>
     </div>

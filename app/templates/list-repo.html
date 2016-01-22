@@ -1,0 +1,43 @@
+{%extends "home.html" %}
+{% block form_content %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <b>版本库信息</b>
+    </div>
+    <div class="panel-body">
+      <div style="margin-left:10px;">
+    {%if repos %}
+        <div class='table-responsive'>
+          <table class="table table-hover">
+            <thead>
+            <tr>
+            <th>#</th>
+            <th>版本库名</th>
+            <th>版本库地址</th>
+            <th>本地存放目录</th>
+            <th>测试环境地址</th>
+            <th>正式环境地址</th>
+            <th>版本库类型</th>
+            </tr>
+           </thead>
+           <tbody>
+               {% for repo in repos %}
+                <tr>
+                    <td>{{ loop.index  + (page-1) * per_page }} </td>
+                    <td>{{ repo.repo_name }}</td>
+                    <td>{{ repo.repo_address }}</td>
+                    <td>{{ repo.local_checkout_path }}</td>
+                    <td>{{ repo.test_deploy_path }}</td>
+                    <td>{{ repo.remote_deploy_path }}</td>
+                    <td>{{ repo.repo_type }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </div>
+    {%endif%}
+  </div>
+ </div>
+ {{pagination.links}}
+</div>
+
+{% endblock %}

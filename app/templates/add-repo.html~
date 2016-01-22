@@ -13,6 +13,13 @@
     <tr>
       <td><b>版本库名:</b></td>
       <td>{{ form.repo_name(size=20, class="form-control") }}</td>
+      {%if not form.local_checkout_path.errors %}
+      {% for message in form.repo_name.errors %}
+      <div class="alert alert-danger" role="alert">
+            <b>ERROR:</b> {{ message }}
+      </div>
+      {%endfor%}
+      {%endif%}
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -39,15 +46,29 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td>本地checkout目录:&nbsp;&nbsp;</td>
+      <td>本地库存放目录:&nbsp;&nbsp;</td>
       <td>{{form.local_checkout_path(size=20,class="form-control")}}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
     <tr>
+      <td>测试环境路径:&nbsp;&nbsp;</td>
+      <td>{{ form.test_deploy_path(size=20,class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
       <td>正式环境路径:&nbsp;&nbsp;</td>
-      <td>{{form.remote_deploy_path(size=20,class="form-control")}}</td>
+      <td>{{ form.remote_deploy_path(size=20,class="form-control") }}</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>排除目录以分号间隔:&nbsp;&nbsp;</td>
+      <td>{{ form.exclude_dir(size=40,class="form-control") }}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -57,8 +78,17 @@
       <td>{{form.repo_type(size=1,class="form-control")}}</td>
     </tr>
     <tr>
-      <td>&nbsp;&nbsp;&nbsp;</td>
-      <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" class="btn btn-primary" name="do_action" value="create" >提交</button></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td>&nbsp;</td>
+      <td><button type="submit" class="btn btn-primary" name="do_action" value="create" >提交</button></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -69,7 +99,7 @@
     <div class="alert alert-danger" role="alert">
       <b>ERROR:</b> please input all choice !!
     </div>
-  {% endif %}
+  {%endif%}
 </form>
 </div>
 </div>

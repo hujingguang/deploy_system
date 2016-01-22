@@ -13,7 +13,9 @@ class ReposForm(Form):
     repo_passwd=PasswordField('Repo_Passwd',validators=[DataRequired("Please enter password")])
     local_checkout_path=StringField('local_checkout_dir',validators=[Regexp('^/.*'),DataRequired("Please enter local checkout dir")])
     remote_deploy_path=StringField('Remote_Deploy_Url',validators=[DataRequired("Please enter remote deploy path")])
+    test_deploy_path=StringField('Test_Deploy_Url',validators=[DataRequired("Please enter test deploy path")])
     repo_type=SelectField('Repo_Type',choices=[('svn','Svn'),('git','Git')])
+    exclude_dir=TextField('Exclude_Dir')
 
 
 

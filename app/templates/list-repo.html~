@@ -11,13 +11,13 @@
           <table class="table table-hover">
             <thead>
             <tr>
-            <th>#</th>
-            <th>版本库名</th>
-            <th>版本库地址</th>
-            <th>本地存放目录</th>
-            <th>测试环境地址</th>
-            <th>正式环境地址</th>
-            <th>版本库类型</th>
+            <th>id</th>
+            <th>Name</th>
+            <th>RepoAddres</th>
+            <th>Checkout</th>
+            <th>Testing</th>
+            <th>Online</th>
+            <th>Type</th>
             </tr>
            </thead>
            <tbody>
@@ -32,15 +32,20 @@
                     <td>{{ repo.repo_type }} </td>
                 </tr>
             {% endfor %}
-        </tbody>
-    </div>
+          </tbody>
+      </div>
     {%endif%}
-  </div>
- </div>
- {{pagination.links}}
-</div>
-
+     </div>
+     {{pagination.links}}
+   </div >
+      <div class="input-group" style="width:30%;margin-left:300px;margin-top=100px">
+        <form action="/list/repoinfo/search" method="post" >
+              <span class="input-group-btn" style="margin-left:2px;">  
+              <button type="submit" class="btn btn-primary" name="do_action" value="search" style="margin-left">search</button>
+          </span>
+          <input type="text" class="form-control" name="repo">
+        </form>
+       <span class="input-group-addon">库名</span>
+      </div>
+   </div>
 {% endblock %}
-{%block js%}
-  $("index").addClass('active');
-{%endblock%}

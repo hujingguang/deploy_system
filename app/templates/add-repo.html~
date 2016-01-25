@@ -97,7 +97,7 @@
   </table>
   {% if failed_auth %}
     <div class="alert alert-danger" role="alert">
-      <b>ERROR:</b> please input all choice !!
+      <b>ERROR:</b> please input !!
     </div>
   {%endif%}
 </form>

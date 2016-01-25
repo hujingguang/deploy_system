@@ -68,6 +68,18 @@ def display_repos_info():
     pagination = Pagination(page=page,link_size='sm',total=counts, record_name='repos',per_page=per_page,bs_version=3,format_total=True,format_number=True,show_single_page=False)
     return render_template('list-repo.html',repos=repos,pagination=pagination,page=page,per_page=per_page)
 
+
+@app.route('/list/repoinfo/search',methods=['GET','POST'])
+@login_required
+def search_repos_info():
+    if request.method=='POST' and request.form.get('repo',None) :
+        args='%'+request.form.get('repo').encode('utf-8')+'%'
+        repos=db.session.query(RepoInfo).filter(RepoInfo.repo_name.like(args))
+        return render_template('repo-search.html',repos=repos)
+    return redirect(url_for('display_repos_info'))
+
+
+
 @app.route('/list/deployinfo')
 @login_required
 def display_deploy_info():

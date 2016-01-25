@@ -23,7 +23,6 @@
            <tbody>
                {% for repo in repos %}
                 <tr>
-                    <td>{{ loop.index  + (page-1) * per_page }} </td>
                     <td>{{ repo.repo_name }}</td>
                     <td>{{ repo.repo_address }}</td>
                     <td>{{ repo.local_checkout_path }}</td>
@@ -36,16 +35,6 @@
       </div>
     {%endif%}
      </div>
-     {{pagination.links}}
    </div >
-      <div class="input-group" style="width:30%;margin-left:300px;margin-top=100px">
-        <form action="/list/repoinfo/search" method="post" >
-              <span class="input-group-btn" style="margin-left:2px;">  
-              <button type="submit" class="btn btn-primary" name="do_action" value="search" style="margin-left">search</button>
-          </span>
-          <input type="text" class="form-control" name="repo">
-        </form>
-       <span class="input-group-addon">库名</span>
-      </div>
-   </div>
+ </div>
 {% endblock %}

@@ -5,3 +5,4 @@
 *.py~
 *.un~
 .un~
+.gitignore

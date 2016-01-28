@@ -10,8 +10,7 @@
         <div class='table-responsive'>
           <table class="table table-hover">
             <thead>
-            <tr>
-            <th>id</th>
+            <tr class="info">
             <th>Name</th>
             <th>RepoAddres</th>
             <th>Checkout</th>
@@ -27,7 +26,7 @@
                     <td>{{ repo.repo_address }}</td>
                     <td>{{ repo.local_checkout_path }}</td>
                     <td>{{ repo.test_deploy_path }}</td>
-                    <td>{{ repo.remote_deploy_path }}</td>
+                    <td>{{ repo.online_deploy_path }}</td>
                     <td>{{ repo.repo_type }} </td>
                 </tr>
             {% endfor %}

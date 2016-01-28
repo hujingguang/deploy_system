@@ -6,28 +6,28 @@
     </div>
     <div class="panel-body">
       <div style="margin-left:10px;">
-    {%if repos %}
+    {%if deploys %}
         <div class='table-responsive'>
           <table class="table table-hover">
             <thead>
             <tr class="info">
             <th>Name</th>
-            <th>RepoAddres</th>
-            <th>Checkout</th>
-            <th>Testing</th>
-            <th>Online</th>
-            <th>Type</th>
+            <th>Now_version</th>
+            <th>Target</th>
+            <th>Env</th>
+            <th>Update</th>
+            <th>Person</th>
             </tr>
            </thead>
            <tbody>
-               {% for repo in repos %}
+               {% for deploy in deploys %}
                 <tr>
-                    <td>{{ repo.repo_name }}</td>
-                    <td>{{ repo.repo_address }}</td>
-                    <td>{{ repo.local_checkout_path }}</td>
-                    <td>{{ repo.test_deploy_path }}</td>
-                    <td>{{ repo.online_deploy_path }}</td>
-                    <td>{{ repo.repo_type }} </td>
+                    <td>{{ deploy.repo_name }}</td>
+                    <td>{{ deploy.now_version }}</td>
+                    <td>{{ deploy.deploy_target }}</td>
+                    <td>{{ repo.deploy_env }}</td>
+                    <td>{{ repo.deploy_date }}</td>
+                    <td>{{ repo.deploy_person }} </td>
                 </tr>
             {% endfor %}
           </tbody>

@@ -1,0 +1,97 @@
+{%extends "home.html" %}
+
+{% block form_content %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <b>发布版本</b>
+    </div>
+    <div class="panel-body">
+      <div style="margin-left:400px;">
+          <form action="{{ url_for('deploy_project') }}" method="post">
+                   {{ form.hidden_tag() }}
+             <table style="margin-top:40px">
+
+                    <tr>
+                       <td><b>版本库名:</b></td>
+                       <td>{{ form.repo_name(size=1, class="form-control") }}</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                      <td>发布环境:&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{form.deploy_env(size=1,class="form-control")}}</td>
+                  </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                      <td>环境密码:&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{form.password(size=20,class="form-control")}}</td>
+                  </tr>
+                  {%for mess in form.password.errors %}
+                  <div class="alert alert-danger" role="alert">
+                      <b>Error: </b>{{ mess }} 
+                  </div>
+                  {%endfor%}
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  <td> 
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#myModal" data-backdrop="static" style="margin-left:50px">发布</button>
+                      <div class="modal fade" id="myModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                      <div class="modal-content">
+                            <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                           <h4 class="modal-title" id="myModalLabel">
+                           </h4>
+                          </div>
+                           <div class="modal-body" style="margin-left:200px">
+                                 确定要发布吗?
+                           </div>
+                           <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                             <button type="submit" class="btn btn-primary " name="do_action" value="deploy" >提交</button>
+                          </div>
+                         </div>
+                      </div>
+                     </div>
+                   </td>
+                   </tr>
+                  </table>
+            {%if auth %}
+            <div class="alert alert-danger" role="alert">
+               <b>Error:</b> 密码错误
+            </div>
+            {%endif%}
+            {%if errors %}
+             <div class="alert alert-danger" role="alert">
+               <b>Error:</b> {{ errors }}
+           </div>
+            {%endif%}
+    </form>
+      </div>
+    </div>
+</div>
+
+
+{% endblock %}
+

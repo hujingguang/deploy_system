@@ -10,7 +10,7 @@
         <div class='table-responsive'>
           <table class="table table-hover">
             <thead>
-            <tr>
+            <tr class="info">
             <th>id</th>
             <th>Name</th>
             <th>RepoAddres</th>
@@ -22,13 +22,13 @@
            </thead>
            <tbody>
                {% for repo in repos %}
-                <tr>
+                <tr class="success">
                     <td>{{ loop.index  + (page-1) * per_page }} </td>
                     <td>{{ repo.repo_name }}</td>
                     <td>{{ repo.repo_address }}</td>
                     <td>{{ repo.local_checkout_path }}</td>
                     <td>{{ repo.test_deploy_path }}</td>
-                    <td>{{ repo.remote_deploy_path }}</td>
+                    <td>{{ repo.online_deploy_path }}</td>
                     <td>{{ repo.repo_type }} </td>
                 </tr>
             {% endfor %}
@@ -43,9 +43,11 @@
               <span class="input-group-btn" style="margin-left:2px;">  
               <button type="submit" class="btn btn-primary" name="do_action" value="search" style="margin-left">search</button>
           </span>
-          <input type="text" class="form-control" name="repo">
+          <input type="text" class="form-control search-query" name="repo">
         </form>
        <span class="input-group-addon">库名</span>
+
+
       </div>
    </div>
 {% endblock %}

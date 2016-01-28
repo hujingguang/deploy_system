@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pip install flask-*
+
+pip install apr apr-util subversion subversion-devel neon neon-devel apr apr-util
+
+pip install pysvn

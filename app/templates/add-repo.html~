@@ -1,5 +1,4 @@
 {%extends "home.html" %}
-
 {% block form_content %}
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -13,12 +12,17 @@
     <tr>
       <td><b>版本库名:</b></td>
       <td>{{ form.repo_name(size=20, class="form-control") }}</td>
-      {%if not form.local_checkout_path.errors %}
-      {% for message in form.repo_name.errors %}
+      {% for var in form %}
+      {%if var.errors%}
+      {%for error in var.errors%}
       <div class="alert alert-danger" role="alert">
-            <b>ERROR:</b> {{ message }}
+          <b>ERROR:</b> {{error}}
       </div>
       {%endfor%}
+      {%endif%}
+      {%endfor%}
+      {%if ErrorInfo%}
+          <b>Error:</b> {{ ErrorInfo}}
       {%endif%}
     </tr>
     <tr>
@@ -26,7 +30,7 @@
     </tr>
     <tr>
       <td><b>版本库地址:&nbsp;&nbsp;</b></td>
-      <td>{{ form.repo_address(size=20, class="form-control") }}</td>
+      <td>{{ form.repo_address(size=20, class="form-control",placeholder="svn://192.168.16.243/repo/trunk") }}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -46,29 +50,29 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td>本地库存放目录:&nbsp;&nbsp;</td>
-      <td>{{form.local_checkout_path(size=20,class="form-control")}}</td>
+      <td>本地目录/开头:&nbsp;&nbsp;</td>
+      <td>{{form.local_checkout_path(size=20,class="form-control",placeholder="/home/repos")}}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
     <tr>
       <td>测试环境路径:&nbsp;&nbsp;</td>
-      <td>{{ form.test_deploy_path(size=20,class="form-control") }}</td>
+      <td>{{ form.test_deploy_path(size=20,class="form-control",placeholder="192.168.16.252:/webdata/d.xx.com") }}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
     <tr>
       <td>正式环境路径:&nbsp;&nbsp;</td>
-      <td>{{ form.remote_deploy_path(size=20,class="form-control") }}</td>
+      <td>{{ form.online_deploy_path(size=20,class="form-control") }}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
     <tr>
       <td>排除目录以分号间隔:&nbsp;&nbsp;</td>
-      <td>{{ form.exclude_dir(size=40,class="form-control") }}</td>
+      <td>{{ form.exclude_dir(size=40,class="form-control",placeholder="dirName;fileName;") }}</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -95,11 +99,6 @@
       <td>&nbsp;</td>
     </tr>
   </table>
-  {% if failed_auth %}
-    <div class="alert alert-danger" role="alert">
-      <b>ERROR:</b> please input !!
-    </div>
-  {%endif%}
 </form>
 </div>
 </div>

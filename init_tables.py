@@ -22,13 +22,11 @@ def insert_first_sql_for_deploy(repoName,now_version,envtype):
             print '初始化库 %s 发布数据成功！！  ' %repoName
         else:
             print '请输入正确的环境类型!  测试环境选项: test, 正式环境选项: online'
-
-
-
+    print '初始化失败！不存在库: %s' %repoName
 
 if __name__=="__main__":
     init_db_user()
-    insert_first_sql_for_deploy('chengzhu','20','test')
+    #insert_first_sql_for_deploy('chengzhu','20','test')
 
 
 

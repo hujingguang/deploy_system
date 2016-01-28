@@ -1,9 +1,0 @@
-^[a-zA-Z].*~
-\..*~
-^[a-zA-z]\~$
-.*.pyc
-*.py~
-*.un~
-.un~
-.gitignore
-.git

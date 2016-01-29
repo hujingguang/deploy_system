@@ -378,11 +378,11 @@ def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_
         ch.sendline('yes')
         ch.expect(['assword',pexpect.EOF,pexpect.TIMEOUT],timeout=120)
         ch.sendline(deploy_passwd)
-        loopfunc(deploy_path)
+        loopfunc(ch.pid)
         ch.close(force=True)
     elif res == 1:
         ch.sendline(deploy_passwd)
-        loopfunc(deploy_path)
+        loopfunc(ch.pid)
         ch.close(force=True)
     else:
         logfunc('ERROR: 执行rsync 同步代码超时,或者 远程主机URL格式错误')
@@ -414,8 +414,8 @@ def insert_deploy_log(repoName,now_version,deploy_target,deploy_env,deploy_perso
 '''
 循环检测函数
 '''
-def loopfunc(target):
-    cmd='''ps aux|egrep -v 'sh|grep'|egrep rsync|grep '%s' ''' %target
+def loopfunc(pid):
+    cmd=''' pstree -p|grep python|grep '%s' |grep rsync ''' %pid
     logfunc(cmd)
     while True:
         res=os.system(cmd)

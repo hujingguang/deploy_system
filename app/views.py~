@@ -281,19 +281,20 @@ def check_svn_validated(user,password,url):
     if res==0:
         return False,u'无效的用户名'
 
+'''
+检测Git远程库地址是否有效,只适用配置秘钥访问的情况
+'''
 
 def check_git_validated(url):
     REX=r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}'
     ip=re.search(REX,url).group()
     ch=pexpect.spawn('ssh root@%s' %ip)
-    res=ch.expect(['yes',pexpect.EOF,pexpect.TIMEOUT],timeout=5)
+    res=ch.expect(['yes',pexpect.EOF,pexpect.TIMEOUT],timeout=4)
     if res==0:
         ch.sendline('yes')
-    print url
     cmd=r'git clone %s' %url
     ch=pexpect.spawn(cmd)
-    res=ch.expect(['done','fatal',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
-    print res
+    res=ch.expect(['done','fatal',pexpect.EOF,pexpect.TIMEOUT],timeout=5)
     if res == 0:
         return True,u'ok'
     elif res == 1:

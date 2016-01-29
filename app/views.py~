@@ -44,9 +44,19 @@ def add_repos():
         if repo is not None:
             form.repo_name.errors.append("库名已存在!!!!")
             return render_template('add-repo.html',form=form)
-        check_is_error,info=check_svn_validated(form.repo_user.data,form.repo_passwd.data,form.repo_address.data)
-        if not check_is_error:
-            return render_template('add-repo.html',form=form,ErrorInfo=info)
+        type_info=form.repo_type.data.encode('utf-8').strip(' ')
+        print type_info
+        print '-----------'
+        if type_info == 'svn':
+            check_is_error,info=check_svn_validated(form.repo_user.data,form.repo_passwd.data,form.repo_address.data)
+            if not check_is_error:
+                return render_template('add-repo.html',form=form,ErrorInfo=info)
+        if type_info == 'git':
+            check_is_error,info=check_git_validated(form.repo_address.data.encode('utf-8').strip(' '))
+            if not check_is_error:
+                return render_template('add-repo.html',form=form,ErrorInfo=info)
+            else:
+                return render_template('home.html')
         repo=RepoInfo(form.repo_name.data,form.repo_address.data,form.repo_user.data,form.repo_passwd.data,form.local_checkout_path.data,form.repo_type.data,form.online_deploy_path.data,form.test_deploy_path.data,form.exclude_dir.data)
         db.session.add(repo)
         db.session.commit()
@@ -270,6 +280,36 @@ def check_svn_validated(user,password,url):
     res=os.system('grep "Username" /tmp/.svn_32197')
     if res==0:
         return False,u'无效的用户名'
+
+
+def check_git_validated(url):
+    REX=r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}'
+    ip=re.search(REX,url).group()
+    ch=pexpect.spawn('ssh root@%s' %ip)
+    res=ch.expect(['yes',pexpect.EOF,pexpect.TIMEOUT],timeout=5)
+    if res==0:
+        ch.sendline('yes')
+    print url
+    cmd=r'git clone %s' %url
+    ch=pexpect.spawn(cmd)
+    res=ch.expect(['done','fatal',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
+    print res
+    if res == 0:
+        return True,u'ok'
+    elif res == 1:
+        return False,u'无效的Git地址,示例: git@192.168.16.23:repo_name'
+    else:
+        return False,u'检测超时,请确认IP是否正确,且需配置秘钥连接'
+
+    
+
+'''
+Git代码发布方法
+'''
+
+def git_deploy():
+    pass
+
 
 
 

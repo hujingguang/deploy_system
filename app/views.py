@@ -45,8 +45,6 @@ def add_repos():
             form.repo_name.errors.append("库名已存在!!!!")
             return render_template('add-repo.html',form=form)
         type_info=form.repo_type.data.encode('utf-8').strip(' ')
-        print type_info
-        print '-----------'
         if type_info == 'svn':
             check_is_error,info=check_svn_validated(form.repo_user.data,form.repo_passwd.data,form.repo_address.data)
             if not check_is_error:
@@ -55,8 +53,6 @@ def add_repos():
             check_is_error,info=check_git_validated(form.repo_address.data.encode('utf-8').strip(' '))
             if not check_is_error:
                 return render_template('add-repo.html',form=form,ErrorInfo=info)
-            else:
-                return render_template('home.html')
         repo=RepoInfo(form.repo_name.data,form.repo_address.data,form.repo_user.data,form.repo_passwd.data,form.local_checkout_path.data,form.repo_type.data,form.online_deploy_path.data,form.test_deploy_path.data,form.exclude_dir.data)
         db.session.add(repo)
         db.session.commit()
@@ -109,17 +105,12 @@ def deploy_project():
     if form.validate_on_submit():
         if check_deploy_passwd(form.repo_name.data,form.deploy_env.data,form.password.data):
             #开始发布代码
-            repo_type=RepoInfo.query.filter_by(repo_name=form.repo_name.data).first().repo_type.encode('utf-8')
-            if repo_type=='svn':
-                result,info=get_deploy_info(form.repo_name.data.encode('utf-8').strip(' '),form.deploy_env.data.encode('utf-8').strip(' '),form.password.data.encode('utf-8').strip(' '),g.user.email.encode('utf-8').strip(' '))
-                if result:
-                    return redirect(url_for('display_deploy_info'))
-                else:
-                    return render_template('deploy.html',form=form,errors=info)
+            #repo_type=RepoInfo.query.filter_by(repo_name=form.repo_name.data).first().repo_type.encode('utf-8')
+            result,info=get_deploy_info(form.repo_name.data.encode('utf-8').strip(' '),form.deploy_env.data.encode('utf-8').strip(' '),form.password.data.encode('utf-8').strip(' '),g.user.email.encode('utf-8').strip(' '))
+            if result:
+                return redirect(url_for('display_deploy_info'))
             else:
-                #git 发布方法
-                pass
-            return render_template('home.html')
+                return render_template('deploy.html',form=form,errors=info)
         else:
             auth=True
             return render_template('deploy.html',auth=auth,form=form)
@@ -197,6 +188,7 @@ def get_deploy_info(repoName,envType,deploy_passwd,deploy_person):
     repo_passwd=repo.repo_passwd.encode('utf-8').strip(' ')
     local_checkout_path=repo.local_checkout_path.encode('utf-8').strip(' ')
     exclude_dir=repo.exclude_dir.encode('utf-8').strip(' ')
+    repo_type=repo.repo_type.encode('utf-8').strip(' ').lower()
     if envType=='test':
         deploy_target=repo.test_deploy_path.encode('utf-8').strip(' ')
     else:
@@ -207,8 +199,10 @@ def get_deploy_info(repoName,envType,deploy_passwd,deploy_person):
     #print  types,repo_name,repo_address,repo_user,repo_passwd,local_checkout_path,exclude_dir,deploy_target,now_version
     #print '*********************************'
     #res,info=svn_deploy(repoName,local_checkout_path,repo_user,repo_passwd,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person)
-    return svn_deploy(repoName,local_checkout_path,repo_user,repo_passwd,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person)
-
+    if repo_type =='svn':
+        return svn_deploy(repoName,local_checkout_path,repo_user,repo_passwd,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person)
+    else:
+        return git_deploy(repoName,local_checkout_path,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person)
        
 
 
@@ -287,6 +281,8 @@ def check_svn_validated(user,password,url):
 
 def check_git_validated(url):
     REX=r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}'
+    if not re.search(REX,url):
+        return False,u'无效的IP地址 ！！'
     ip=re.search(REX,url).group()
     ch=pexpect.spawn('ssh root@%s' %ip)
     res=ch.expect(['yes',pexpect.EOF,pexpect.TIMEOUT],timeout=4)
@@ -294,13 +290,13 @@ def check_git_validated(url):
         ch.sendline('yes')
     cmd=r'git clone %s' %url
     ch=pexpect.spawn(cmd)
-    res=ch.expect(['done','fatal',pexpect.EOF,pexpect.TIMEOUT],timeout=5)
+    res=ch.expect(['done','fatal',pexpect.EOF,pexpect.TIMEOUT],timeout=8)
     if res == 0:
         return True,u'ok'
     elif res == 1:
-        return False,u'无效的Git地址,示例: git@192.168.16.23:repo_name'
+        return False,u'Git地址不正确或无效,示例: git@192.168.16.23:repo_name'
     else:
-        return False,u'检测超时,请确认IP是否正确,且需配置秘钥连接'
+        return False,u'检测库地址超时,请确认IP是否正确,且需配置秘钥连接'
 
     
 
@@ -308,8 +304,77 @@ def check_git_validated(url):
 Git代码发布方法
 '''
 
-def git_deploy():
-    pass
+def git_deploy(repoName,checkDir,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person):
+    code_dir=''
+    if not checkDir.startswith('/'):
+        checkDir="/"+checkDir
+    if checkDir.endswith('/'):
+        num=checkDir.rfind('/')
+        checkDir=checkDir[:num]
+    if repo_address.endswith('/'):
+        num=repo_address.rfind('/')
+        repo_address=repo_address[:num]
+    num=repo_address.rfind(':')
+    code_dir=repo_address[num+1:]
+    local_repo_dir=checkDir+"/"+repoName+'_'+envType
+    if not os.path.exists(local_repo_dir):
+        os.system('mkdir -p %s' %local_repo_dir)
+    if not os.path.exists(local_repo_dir+'/'+code_dir+'/.git'):
+        res=os.system(r'cd %s && git clone %s ' %(local_repo_dir,repo_address))
+        if res !=0:
+            logfunc('Git ----- 克隆远程库失败!!! %s' %repo_address)
+            return False,u'初始化代码库失败'
+        logfunc('Git----- init git repo Success ')
+    res=os.system('cd %s/%s && git pull origin master' %(local_repo_dir,code_dir))
+    if res == 0:
+        logfunc('Git --- Pull code success')
+    else:
+        return False,u'获取远程代码失败!!'
+    if not os.path.exists('%s/%s/.git/refs/heads/master' %(local_repo_dir,code_dir)):
+        logfunc('Git: ERROR   无法获取最新master uid ')
+        return False,u'无法获取到最新版本号'
+    cmd,last_version=commands.getstatusoutput('cat %s/%s/.git/refs/heads/master' %(local_repo_dir,code_dir))
+    last_version=last_version[:12].strip(' ')
+    if len(now_version) > 12:
+        now_version=now_version[:12].strip(' ')
+    if len(now_version) <12:
+        return False,u'Git 版本id必须大于12位！！ 请重新初始化'
+    if last_version == now_version:
+        return False,u'没有代码可更新'
+    if now_version.strip(' ') == '':
+        return False,u'当前版本为空！！'
+    get_diff_cmd=''' cd %s/%s && git diff --name-status  %s %s |sed 's/^[ ]*//g' >/tmp/.git909081''' %(local_repo_dir,code_dir,last_version,now_version)
+    logfunc('Git ---- %s' %get_diff_cmd)
+    res=os.system(get_diff_cmd)
+    if res != 0:
+        return False,u'无法获取更新文件'
+    diff_file_cmd=''' cat /tmp/.git909081 |awk '/^[DMRCT]/{print $NF}' >/tmp/.git_diff '''
+    logfunc(diff_file_cmd)
+    res=os.system(diff_file_cmd)
+    if res !=0:
+        logfunc('更新失败,无法或取更新文件,从/tmp/.git909081')
+        return False,u'更新失败'
+    result=upload_code(local_repo_dir+'/'+code_dir,'/tmp/.git_diff',deploy_passwd,deploy_target,exclude_dir)
+    if not result:
+        return False,u'上传更新文件到目标服务器失败!!'
+    r,update_log=commands.getstatusoutput('cat /tmp/.git909081')
+    R=insert_deploy_log(repoName,last_version,deploy_target,envType,deploy_person,datetime.now(),update_log)
+    if not R:
+        return True,u'发布成功,写入发布日志失败'
+    return True,u'发布成功'
+
+
+
+
+ 
+    
+
+
+
+    
+
+
+
 
 
 
@@ -319,10 +384,7 @@ svn代码发布方法
 '''
 
 def svn_deploy(repoName,checkDir,user,password,repo_address,deploy_target,exclude_dir,envType,now_version,deploy_passwd,deploy_person):
-    update_log=''
-    new_version=''
     code_dir=''
-    global Update_File,Update_Time
     if not checkDir.startswith('/'):
         checkDir="/"+checkDir
     if checkDir.endswith('/'):
@@ -358,16 +420,11 @@ def svn_deploy(repoName,checkDir,user,password,repo_address,deploy_target,exclud
             update_cmd=''' cd %s/%s && svn diff --username="%s" --password="%s" -r%s:%s --summarize|sed "s/^\s\+//g" >/tmp/.tmp9090123 2>/dev/null ''' %(local_repo_dir,code_dir,user,password,now_version,last_version)
             logfunc(update_cmd)
             res=os.system(update_cmd)
-            if res == 0:
-                logfunc('SVN------ Get diff files ')
-                Update_File='/tmp/.tmp9090123'
-            else:
-                logfunc('SVN ------ ERROR: Get Diff files failed')
-                return False,u'获取差异文件失败'
             if res != 0:
                 logfunc('SVN ---- ERROR: 获取更新文件失败 \n')
                 return False,u'获取更新文件失败'
             else:
+                logfunc('SVN --- 获取更新文件 success ')
                 get_diff_cmd='''cat /tmp/.tmp9090123|egrep -v '^$' |awk '/^[^D]/ {print $2}' >/tmp/.tmp_diff 2>/dev/null '''
                 os.system(get_diff_cmd)
                 logfunc('SVN ----- Get rsync diff Files '+get_diff_cmd)
@@ -397,7 +454,7 @@ def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_
     else:
         exclude_files=''
         L=[]
-        for f in exclude:
+        for f in exclude_list:
             f='"'+f.strip(' ')+'",'
             L.append(f)
         for j in L:

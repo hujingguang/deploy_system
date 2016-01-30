@@ -8,6 +8,9 @@ from datetime import datetime
 
 def init_db_user():
     db.create_all()
+    user=User('admin','meitianhui')
+    db.session.add(user)
+    db.session.commit()
 
 def insert_first_sql_for_deploy(repoName,now_version,envtype):
     repo_info=RepoInfo.query.filter_by(repo_name=repoName).first()

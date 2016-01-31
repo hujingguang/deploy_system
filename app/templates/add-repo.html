@@ -6,7 +6,7 @@
     </div>
     <div class="panel-body">
       <div style="margin-left:200px;">
-<form action="{{ url_for('add_repos') }}" method="post">
+<form action="{{ url_for('add_repos') }}" method="post" onsubmit="getElementById('Input').disabled=true;return true;">
   {{ form.hidden_tag() }}
   <table>
     <tr>
@@ -94,7 +94,7 @@
 
     <tr>
       <td>&nbsp;</td>
-      <td><button type="submit" class="btn btn-primary" name="do_action" value="create" >提交</button></td>
+      <td><button type="submit" class="btn btn-primary" id="Input" name="do_action" value="create" >提交</button></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

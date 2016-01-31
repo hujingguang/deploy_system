@@ -7,7 +7,7 @@
     </div>
     <div class="panel-body">
       <div style="margin-left:400px;">
-          <form action="{{ url_for('deploy_project') }}" method="post">
+          <form action="{{ url_for('deploy_project') }}" method="post",onsubmit="getElementById('submitInput').desabled=True;return true;">
                    {{ form.hidden_tag() }}
              <table style="margin-top:40px">
 
@@ -69,7 +69,7 @@
                            </div>
                            <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                             <button type="submit" class="btn btn-primary " name="do_action" value="deploy" >提交</button>
+                             <button type="submit" class="btn btn-primary " id="submitInput" name="do_action" value="deploy" >提交</button>
                           </div>
                          </div>
                       </div>

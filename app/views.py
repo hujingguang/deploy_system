@@ -113,10 +113,10 @@ def deploy_project():
     auth=False
     #res=RepoInfo.query()
     if form.validate_on_submit():
-        if check_deploy_passwd(form.repo_name.data,form.deploy_env.data,form.password.data):
+        if check_deploy_passwd(form.repo_name.data.repo_name,form.deploy_env.data,form.password.data):
             #开始发布代码
             #repo_type=RepoInfo.query.filter_by(repo_name=form.repo_name.data).first().repo_type.encode('utf-8')
-            result,info=get_deploy_info(form.repo_name.data.encode('utf-8').strip(' '),form.deploy_env.data.encode('utf-8').strip(' '),form.password.data.encode('utf-8').strip(' '),g.user.email.encode('utf-8').strip(' '))
+            result,info=get_deploy_info(form.repo_name.data.repo_name.encode('utf-8').strip(' '),form.deploy_env.data.encode('utf-8').strip(' '),form.password.data.encode('utf-8').strip(' '),g.user.email.encode('utf-8').strip(' '))
             if result:
                 return redirect(url_for('display_deploy_info'))
             else:

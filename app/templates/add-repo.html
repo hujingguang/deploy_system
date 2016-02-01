@@ -13,17 +13,17 @@
       <td><b>版本库名:</b></td>
       <td>{{ form.repo_name(size=20, class="form-control") }}</td>
       {% for var in form %}
-      {%if var.errors%}
-      {%for error in var.errors%}
+      {%if var.errors %}
+      {%for error in var.errors %}
       <div class="alert alert-danger" role="alert">
-          <b>ERROR:</b> {{error}}
+          <b>ERROR:</b> {{ error }}
       </div>
       {%endfor%}
       {%endif%}
       {%endfor%}
-      {%if ErrorInfo%}
+      {%if ErrorInfo %}
         <div class="alert alert-danger"role="alert">
-          <b>Error:</b> {{ ErrorInfo}}
+          <b>Error:</b> {{ ErrorInfo }}
         </div>
       {%endif%}
     </tr>

@@ -11,6 +11,10 @@ from flask.ext.paginate import Pagination
 from sqlalchemy import desc
 import os,commands,time,pexpect,re
 from datetime import datetime
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 Log_File='/tmp/deploy.log'
 TIMEFORMAT='%Y-%m-%d %X'
 mod=Blueprint('views',__name__)
@@ -26,6 +30,12 @@ def load_user(uid):
 def before_request():
     g.user = current_user
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login')) 
+
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -37,8 +47,8 @@ def index():
 def add_repos():
     from forms import ReposForm
     form=ReposForm()
-    if request.method=='GET':
-        return render_template('add-repo.html',form=form)
+    #if request.method=='GET':
+    #    return render_template('add-repo.html',form=form)
     if form.validate_on_submit():
         repo=RepoInfo.query.filter_by(repo_name=form.repo_name.data).first()
         if repo is not None:
@@ -274,6 +284,9 @@ def check_svn_validated(user,password,url):
     res=os.system('grep "Username" /tmp/.svn_32197')
     if res==0:
         return False,u'无效的用户名'
+    res=os.system('grep "Unknown hostname" /tmp/.svn_32197')
+    if res==0:
+        return False,u'错误的svn地址'
 
 '''
 检测Git远程库地址是否有效,只适用配置秘钥访问的情况

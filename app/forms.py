@@ -12,12 +12,12 @@ class LoginForm(Form):
 
 class ReposForm(Form):
     repo_name=StringField('Repo_Name',validators=[DataRequired("请输入库名")])
-    repo_address=StringField('Repo_Address',validators=[DataRequired("Please enter full url for Repository")])
-    repo_user=StringField('Repo_Address',validators=[DataRequired("Please enter user")])
-    repo_passwd=PasswordField('Repo_Passwd',validators=[DataRequired("Please enter password")])
-    local_checkout_path=StringField('local_checkout_dir',validators=[Regexp('^/.*'),DataRequired("Please enter local checkout dir")])
-    online_deploy_path=StringField('Online_Deploy_Url',validators=[DataRequired("Please enter remote deploy path")])
-    test_deploy_path=StringField('Test_Deploy_Url',validators=[DataRequired("Please enter test deploy path")])
+    repo_address=StringField('Repo_Address',validators=[DataRequired("请输入版本库地址")])
+    repo_user=StringField('Repo_User',validators=[DataRequired("请输入库用户")])
+    repo_passwd=PasswordField('Repo_Passwd',validators=[DataRequired("请输入密码")])
+    local_checkout_path=StringField('local_checkout_dir',validators=[Regexp('^/.*'),DataRequired("请输入本地checkout目录")])
+    online_deploy_path=StringField('Online_Deploy_Url',validators=[DataRequired("请输入正式环境发布绝对路径")])
+    test_deploy_path=StringField('Test_Deploy_Url',validators=[DataRequired("请输入测试环境发布绝对路径")])
     repo_type=SelectField('Repo_Type',choices=[('svn','Svn'),('git','Git')])
     exclude_dir=TextField('Exclude_Dir')
 

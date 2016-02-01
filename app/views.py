@@ -14,8 +14,8 @@ from datetime import datetime
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
-Log_File='/tmp/deploy.log'
+Log_File='/tmp/deploy.log'      #程序运行的日志文件
+Update_File='/tmp/update.log'   #记录更新文件的日志文件
 TIMEFORMAT='%Y-%m-%d %X'
 mod=Blueprint('views',__name__)
 bootstrap=Bootstrap(app)
@@ -509,6 +509,15 @@ def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_
 
 def insert_deploy_log(repoName,now_version,deploy_target,deploy_env,deploy_person,deploy_date,update_log):
     deploy=DeployInfo(repoName,now_version,deploy_target,deploy_env,deploy_person,deploy_date,update_log)
+    global Update_File
+    f=open(Update_File,'a')
+    r,dt=commands.getstatusoutput(r'date +"%Y-%m-%d %H:%M:%S"')
+    f.write(dt+'\n')
+    f.write(update_log+'\n')
+    f.close()
+    os.system('echo "%s" >/tmp/.update.log' %update_log)
+    cmd=''' cat /tmp/.update.log|sed 's/[^a-zA-Z0-9[:punct:]]//g'|egrep -v '^$' '''
+    r,update_log=commands.getstatusoutput(cmd)
     db.session.add(deploy)
     try:
         db.session.commit()

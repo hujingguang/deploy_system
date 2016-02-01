@@ -7,7 +7,7 @@ lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 app.config['SECRET_KEY']='123123123123123'
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://hoo:hoo123@121.40.148.40/hoo'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql://hoo:hoo123@192.168.16.22/hoo'
 app.config['CSRF_ENABLED']=True
 app.config['SQLALCHEMY_ECHO']=True
 app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', True)

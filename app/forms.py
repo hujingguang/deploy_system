@@ -34,6 +34,7 @@ def checkall_reponame():
 
 class DeployForm(Form):
     choices=checkall_reponame()
-    repo_name=SelectField('Repo_Name',choices=choices)
+    repo_name=SelectField('Repo_Name',choices=[(obj.repo_name,obj.repo_name) for obj in RepoInfo.query.order_by('repo_name')])
     deploy_env=SelectField('Deploy_Env',choices=[('test','Test'),('online','Online')]) 
     password=PasswordField('Passwd',validators=[DataRequired("Please enter password")])
+

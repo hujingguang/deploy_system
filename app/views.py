@@ -233,7 +233,7 @@ def backup_rollback_online(repoName,exclude_dir,passwd,types):
 def backup_func(local_dir,target_path,passwd,exclude_args):
     if not target_path.endswith('/'):
         target_path=target_path+'/'
-    cmd='''rsync -avlP --delete %s %s %s ''' %(exclude_args,target_path,local_dir)
+    cmd='''rsync -avlq --delete %s %s %s ''' %(exclude_args,target_path,local_dir)
     logfunc('备份命令--------'+cmd)
     if auto_execute_cmd(cmd,passwd):
         return True,u'备份成功！！ 备份目录: %s' %local_dir
@@ -246,7 +246,7 @@ def backup_func(local_dir,target_path,passwd,exclude_args):
 def rollback_func(local_dir,target_path,passwd,exclude_args):
     if not local_dir.endswith('/'):
         local_dir=local_dir+'/'
-    cmd=''' rsync -avlP %s %s %s ''' %(exclude_args,local_dir,target_path)
+    cmd=''' rsync -avlq %s %s %s ''' %(exclude_args,local_dir,target_path)
     logfunc('还原命令-----------'+cmd)
     if auto_execute_cmd(cmd,passwd):
         return True,u'还原成功'
@@ -257,14 +257,14 @@ def rollback_func(local_dir,target_path,passwd,exclude_args):
 非交互式远程执行命令函数
 '''
 def auto_execute_cmd(cmd,passwd):
-    f=open('/tmp/.backup.sh','w')
-    f.write(cmd)
-    f.close()
+    os.system('echo "%s" >/tmp/.backup.sh ' %cmd)
     ch=pexpect.spawn('bash /tmp/.backup.sh')
     res=ch.expect(['yes','assword',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
     if res == 0:
         ch.sendline('yes')
         res=ch.expect(['assword',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
+        if res != 0:
+            return False
         ch.sendline(passwd)
         loopfunc(ch.pid)
         ch.close(force=True)
@@ -582,7 +582,7 @@ def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_
     if not os.path.exists(home_dir):
         logfunc('ERROR: 不存在本地checkout目录')
         return False
-    up_cmd='''rsync -avlP %s  --files-from=%s %s  %s && echo ok >/tmp/.tmp0001 || echo error >/tmp/.tmp0001 ''' %(exclude_args,update_file_path,home_dir,deploy_path)
+    up_cmd='''rsync -avlq %s  --files-from=%s %s  %s && echo ok >/tmp/.tmp0001 || echo error >/tmp/.tmp0001 ''' %(exclude_args,update_file_path,home_dir,deploy_path)
     logfunc(up_cmd)
     f=open('/tmp/.update.sh','w')
     f.write(up_cmd)

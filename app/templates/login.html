@@ -1,6 +1,6 @@
 {%extends "base.html" %}
 {%block banner%}
-  <a class="navbar-brand" >欢迎登陆每天惠版本发布系统</a>
+  <a class="navbar-brand" style="margin-left:62%" >每 天 惠 版 本 发 布 系 统</a>
 {%endblock%}
 {%block home %}
 {%endblock%}
@@ -16,7 +16,7 @@
   {{ form.hidden_tag() }}
   <table>
     <tr>
-      <td><b>Email:</b></td>
+      <td><b>用户:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
       <td>{{ form.email(size=20, class="form-control") }}</td>
     </tr>
     <tr>
@@ -24,7 +24,7 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td><b>Password:&nbsp;&nbsp;</b></td>
+      <td><b>密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
       <td>{{ form.password(size=20, class="form-control") }}</td>
     </tr>
     <tr>
@@ -37,7 +37,7 @@
     </tr>
     <tr>
       <td>&nbsp;&nbsp;&nbsp;</td>
-      <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" class="btn btn-primary" name="do_action" value="login" >Log In</button></td>
+      <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button style="width:100%" type="submit" class="btn btn-primary" name="do_action" value="login" >登陆</button></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

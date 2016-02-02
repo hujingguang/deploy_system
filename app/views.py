@@ -202,6 +202,9 @@ def backup_or_rollback():
     return render_template('backup.html',form=form)
 
     
+'''
+线上代码备份回滚方法
+'''
 
 def backup_rollback_online(repoName,exclude_dir,passwd,types):
     global Backup_Dir
@@ -224,16 +227,21 @@ def backup_rollback_online(repoName,exclude_dir,passwd,types):
     else:
         return rollback_func(local_dir,deploy_target,passwd,exclude_args)
 
-
+'''
+备份代码方法
+'''
 def backup_func(local_dir,target_path,passwd,exclude_args):
     if not target_path.endswith('/'):
         target_path=target_path+'/'
     cmd='''rsync -avlP --delete %s %s %s ''' %(exclude_args,target_path,local_dir)
     logfunc('备份命令--------'+cmd)
     if auto_execute_cmd(cmd,passwd):
-        return True,u'备份成功！！'
+        return True,u'备份成功！！ 备份目录: %s' %local_dir
     return False,u'备份失败！！'
 
+'''
+回滚代码方法
+'''
 
 def rollback_func(local_dir,target_path,passwd,exclude_args):
     if not local_dir.endswith('/'):
@@ -245,6 +253,9 @@ def rollback_func(local_dir,target_path,passwd,exclude_args):
     return False,u'还原失败'
 
 
+'''
+非交互式远程执行命令函数
+'''
 def auto_execute_cmd(cmd,passwd):
     f=open('/tmp/.backup.sh','w')
     f.write(cmd)
@@ -562,7 +573,9 @@ def svn_deploy(repoName,checkDir,user,password,repo_address,deploy_target,exclud
     logfunc('SVN ------ ERROR: 无法获取最新版本信息')
     return False,u'无法获取最新版本'
 
-
+'''
+上传更新代码到目标环境
+'''
 def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_file=''):
     exclude_list=exclude_dir_file.strip(' ').split(';')
     exclude_args=deal_with_exclude(exclude_dir_file)
@@ -596,7 +609,9 @@ def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_
     else:
         logfunc('SVN ----- 上传代码到环境失败！！！')
         return False
-
+'''
+插入发布日志方法
+'''
 
 def insert_deploy_log(repoName,now_version,deploy_target,deploy_env,deploy_person,deploy_date,update_log):
     deploy=DeployInfo(repoName,now_version,deploy_target,deploy_env,deploy_person,deploy_date,update_log)
@@ -617,8 +632,6 @@ def insert_deploy_log(repoName,now_version,deploy_target,deploy_env,deploy_perso
         return False
     logfunc('Success: 插入发布日志成功')
     return True
-    
-
 
 
 

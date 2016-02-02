@@ -16,6 +16,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 Log_File='/tmp/deploy.log'      #程序运行的日志文件
 Update_File='/tmp/update.log'   #记录更新文件的日志文件
+Backup_Dir='/home/backup'       #正式环境备份目录
 TIMEFORMAT='%Y-%m-%d %X'
 mod=Blueprint('views',__name__)
 bootstrap=Bootstrap(app)
@@ -180,6 +181,120 @@ def login():
             return render_template('login.html',form=form,failed_auth=True)
     return render_template('login.html',form=form)
 
+@app.route('/project/backup',methods=['GET','POST'])
+@login_required
+def backup_or_rollback():
+    from forms import BackupForm
+    form=BackupForm()
+    if form.validate_on_submit():
+        repoName=form.repo_name.data.repo_name.encode('utf-8').strip(' ')
+        envType='online'
+        passwd=form.password.data.encode('utf-8')
+        types=form.back_or_roll.data.encode('utf-8').strip(' ')
+        exclude_dir=form.exclude_dir.data.encode('utf-8').strip(' ')
+        if check_deploy_passwd(repoName,envType,passwd):
+            result,info=backup_rollback_online(repoName,exclude_dir,passwd,types)
+            if result:
+                return render_template('backup.html',form=form,info=info)
+            else:
+                return render_template('backup.html',form=form,errors=info)
+        return render_template('backup.html',form=form,auth=True) 
+    return render_template('backup.html',form=form)
+
+    
+
+def backup_rollback_online(repoName,exclude_dir,passwd,types):
+    global Backup_Dir
+    repo=RepoInfo.query.filter_by(repo_name=repoName).first()
+    if repo is None:
+        return False,u'获取库信息失败,请检查数据库是否有该库记录'
+    deploy_target=repo.online_deploy_path.encode('utf-8').strip(' ')
+    exclude_args=deal_with_exclude(exclude_dir)
+    if not Backup_Dir.startswith('/'):
+        logfunc('Backup_Dir 不合法:     %s' %Backup_Dir)
+        return False,u'请配置正确的备份目录'
+    if Backup_Dir.endswith('/'):
+        num=Backup_Dir.rfind('/')
+        Backup_Dir=Backup_Dir[:num]
+    local_dir=Backup_Dir+'/'+repoName+'/online_backup'
+    if not os.path.exists(local_dir):
+        os.system('mkdir -p %s' %local_dir)
+    if types=='backup':
+        return backup_func(local_dir,deploy_target,passwd,exclude_args)
+    else:
+        return rollback_func(local_dir,deploy_target,passwd,exclude_args)
+
+
+def backup_func(local_dir,target_path,passwd,exclude_args):
+    if not target_path.endswith('/'):
+        target_path=target_path+'/'
+    cmd='''rsync -avlP --delete %s %s %s ''' %(exclude_args,target_path,local_dir)
+    logfunc('备份命令--------'+cmd)
+    if auto_execute_cmd(cmd,passwd):
+        return True,u'备份成功！！'
+    return False,u'备份失败！！'
+
+
+def rollback_func(local_dir,target_path,passwd,exclude_args):
+    if not local_dir.endswith('/'):
+        local_dir=local_dir+'/'
+    cmd=''' rsync -avlP %s %s %s ''' %(exclude_args,local_dir,target_path)
+    logfunc('还原命令-----------'+cmd)
+    if auto_execute_cmd(cmd,passwd):
+        return True,u'还原成功'
+    return False,u'还原失败'
+
+
+def auto_execute_cmd(cmd,passwd):
+    f=open('/tmp/.backup.sh','w')
+    f.write(cmd)
+    f.close()
+    ch=pexpect.spawn('bash /tmp/.backup.sh')
+    res=ch.expect(['yes','assword',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
+    if res == 0:
+        ch.sendline('yes')
+        res=ch.expect(['assword',pexpect.EOF,pexpect.TIMEOUT],timeout=10)
+        ch.sendline(passwd)
+        loopfunc(ch.pid)
+        ch.close(force=True)
+    elif res == 1:
+        ch.sendline(passwd)
+        loopfunc(ch.pid)
+        ch.close(force=True)
+    else:
+        return False
+    return True
+
+
+
+
+
+
+'''
+处理排除目录参数函数
+'''    
+
+def deal_with_exclude(exclude_dir):
+    exclude_list=exclude_dir.strip(' ').split(';')
+    exclude_args=' '
+    while '' in exclude_list:
+        exclude_list.remove('')
+    if len(exclude_list) == 0:
+        exclude_args=' '
+    elif len(exclude_list) == 1:
+        exclude_args=''' --exclude "%s" ''' %exclude_list[0].strip(' ')
+    else:
+        exclude_files=''
+        L=[]
+        for f in exclude_list:
+            f='"'+f.strip(' ')+'",'
+            L.append(f)
+        for j in L:
+            exclude_files=exclude_files+j
+        n=exclude_files.rfind(',')
+        exclude_files=exclude_files[:n]
+        exclude_args=' --exclude={' +exclude_files+'} '
+    return exclude_args
 
 '''
 获取发布代码所需信息
@@ -190,7 +305,7 @@ def get_deploy_info(repoName,envType,deploy_passwd,deploy_person):
     repo=RepoInfo.query.filter_by(repo_name=repoName).first()
     last_deploy=DeployInfo.query.filter_by(repo_name=repoName).filter_by(deploy_env=envType.lower()).order_by(DeployInfo.id.desc()).first()
     if repo is  None or last_deploy is None:
-        return False,'获取发布信息失败'
+        return False,u'获取发布信息失败'
     types=repo.repo_type.encode('utf-8').strip(' ')
     repo_name=repo.repo_name.encode('utf-8').strip(' ')
     repo_address=repo.repo_address.encode('utf-8').strip(' ')
@@ -229,9 +344,16 @@ def check_deploy_passwd(repoName,envType,passwd):
             deploy_path=repo.test_deploy_path.encode('utf-8')
         else:
             deploy_path=repo.online_deploy_path.encode('utf-8')
+        if re.search(REX,deploy_path) is None:
+            return False
         ip=re.search(REX,deploy_path).group()
         return check_ssh_passwd(passwd,ip)
     return False
+
+
+
+
+
 
 '''
 实现验证密码功能函数
@@ -378,20 +500,6 @@ def git_deploy(repoName,checkDir,repo_address,deploy_target,exclude_dir,envType,
 
 
 
-
- 
-    
-
-
-
-    
-
-
-
-
-
-
-
 '''
 svn代码发布方法
 '''
@@ -457,24 +565,7 @@ def svn_deploy(repoName,checkDir,user,password,repo_address,deploy_target,exclud
 
 def upload_code(home_dir,update_file_path,deploy_passwd,deploy_path,exclude_dir_file=''):
     exclude_list=exclude_dir_file.strip(' ').split(';')
-    exclude_args=' '
-    while '' in exclude_list:
-        exclude_list.remove('')
-    if len(exclude_list) == 0:
-        exclude_args=' '
-    elif len(exclude_list) == 1:
-        exclude_args=''' --exclude "%s" ''' %exclude_list[0].strip(' ')
-    else:
-        exclude_files=''
-        L=[]
-        for f in exclude_list:
-            f='"'+f.strip(' ')+'",'
-            L.append(f)
-        for j in L:
-            exclude_files=exclude_files+j
-        n=exclude_files.rfind(',')
-        exclude_files=exclude_files[:n]
-        exclude_args=' --exclude={' +exclude_files+'} '
+    exclude_args=deal_with_exclude(exclude_dir_file)
     if not os.path.exists(home_dir):
         logfunc('ERROR: 不存在本地checkout目录')
         return False
@@ -512,7 +603,7 @@ def insert_deploy_log(repoName,now_version,deploy_target,deploy_env,deploy_perso
     global Update_File
     f=open(Update_File,'a')
     r,dt=commands.getstatusoutput(r'date +"%Y-%m-%d %H:%M:%S"')
-    f.write(dt+'\n')
+    f.write(dt+'----------'+repoName+'\n')
     f.write(update_log+'\n')
     f.close()
     os.system('echo "%s" >/tmp/.update.log' %update_log)

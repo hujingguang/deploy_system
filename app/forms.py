@@ -5,6 +5,7 @@ from wtforms import StringField,BooleanField,SelectField,TextField,SubmitField,P
 from wtforms.validators import DataRequired,Email,EqualTo,Regexp
 from app import db
 from models import RepoInfo
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 class LoginForm(Form):
     email = StringField('Email', validators=[DataRequired("Please enter your email address."),Email("Please enter your email address.")])
@@ -38,3 +39,8 @@ class DeployForm(Form):
     deploy_env=SelectField('Deploy_Env',choices=[('test','Test'),('online','Online')]) 
     password=PasswordField('Passwd',validators=[DataRequired("Please enter password")])
 
+class BackupForm(Form):
+    repo_name=QuerySelectField('Repo_Name',query_factory=lambda :RepoInfo.query.order_by('repo_name'),get_label=lambda x:x.repo_name)
+    back_or_roll=SelectField('back_or_roll',choices=[('backup','Backup'),('rollback','Rollback')]) 
+    password=PasswordField('Passwd',validators=[DataRequired("Please enter password")])
+    exclude_dir=StringField('Exclude_dir')

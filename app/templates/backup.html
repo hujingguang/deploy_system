@@ -7,7 +7,7 @@
     </div>
     <div class="panel-body">
       <div style="margin-left:400px;">
-          <form action="{{ url_for('deploy_project') }}" method="post" onsubmit="getElementById('submitInput').disabled=true;return true;">
+          <form action="{{ url_for('backup_or_rollback') }}" method="post" onsubmit="getElementById('Input').disabled=true;return true;">
                    {{ form.hidden_tag() }}
              <table style="margin-top:40px">
 
@@ -25,8 +25,22 @@
                      <td>&nbsp;</td>
                    </tr>
                    <tr>
-                      <td>发布环境:&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                    <td>{{form.deploy_env(size=1,class="form-control")}}</td>
+                      <td>排除目录或文件: &nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{form.exclude_dir(size=1,class="form-control",placeholder="dir;file;")}}</td>
+                  </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                   </tr>
+
+                   <tr>
+                      <td>操作类型: &nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{form.back_or_roll(size=1,class="form-control")}}</td>
                   </tr>
                    <tr>
                      <td>&nbsp;</td>
@@ -55,27 +69,9 @@
                   <tr>
                     <td>&nbsp;</td>
                   <td> 
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#myModal" data-backdrop="static" style="margin-left:50px">发布</button>
-                      <div class="modal fade" id="myModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
-                      <div class="modal-dialog">
-                      <div class="modal-content">
-                            <div class="modal-header">
-                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                           <h4 class="modal-title" id="myModalLabel">
-                           </h4>
-                          </div>
-                           <div class="modal-body" style="margin-left:200px">
-                            <b> 发布到正式环境请先备份!!</b>     确定要发布吗?
-                           </div>
-                           <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                             <button type="submit" class="btn btn-primary " id="submitInput" name="do_action" value="deploy" >提交</button>
-                          </div>
-                         </div>
-                      </div>
-                     </div>
+                      <button class="btn btn-primary" type="submit" id="Input" style="margin-left:50px" name="do_action" value="backup" >提交</button>
                    </td>
-                   </tr>
+                  </tr>
                   </table>
             {%if auth %}
             <div class="alert alert-danger" role="alert">
@@ -85,6 +81,11 @@
             {%if errors %}
              <div class="alert alert-danger" role="alert">
                <b>Error:</b> {{ errors }}
+           </div>
+            {%endif%}
+            {%if info %}
+             <div class="alert alert-success" role="alert">
+               <b>Success:</b> {{ info }}
            </div>
             {%endif%}
     </form>

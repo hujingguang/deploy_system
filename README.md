@@ -11,8 +11,17 @@ deploy project system
 
 init_tables.py 文件包括两个方法：
  
- 1 init_db_user()  用来创建数据库表以及初始化一个账号，该账号用户名为邮箱格式，否则报错，
- 2 insert
+ 1 init_db_user()  用来创建数据库表以及初始化一个账号，该账号用户名必须为邮箱格式，否则报错.
+
+ 2 insert_first_sql_for_deploy() 用来插入第一条代码发布日志，系统根据此记录确定上次发布版本号.  
+ 该方法的三个参数依次为： 
+ repoName  库名，在系统中添加成功的版本库名
+ now_version 版本号，版本库和发布环境代码完全一致时的版本库版本号，Git为commit id,长度需大于12位
+ envType    发布环境，选项为 'test'  or   'online'
+ 
+ 3 根据所添加的库名修改 init_tables.py文件对数据库进行初始化 执行命令 python init_tables.py即可
+ 
+ 4 修改run.py 文件绑定当前主机IP及端口,然后运行 python run.py 即可
 
 
 

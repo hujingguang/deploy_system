@@ -9,9 +9,10 @@ deploy project system
 
 运行该系统需初始化数据库表
 
-init_db_tables.py 文件包括两个方法：
+init_tables.py 文件包括两个方法：
  
- 1 init_d
+ 1 init_db_user()  用来创建数据库表以及初始化一个账号，该账号用户名为邮箱格式，否则报错，
+ 2 insert
 
 
 

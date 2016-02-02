@@ -22,6 +22,8 @@ init_tables.py 文件包括两个方法：
  
  envType    发布环境，选项为 'test'  or   'online'
  
+ 以上三个参数均需手动添加 并插入！！！
+ 
  3     根据所添加的库名修改 init_tables.py文件对数据库进行初始化 执行命令 python init_tables.py即可
  
  4     修改run.py 文件绑定当前主机IP及端口,然后运行 python run.py 即可

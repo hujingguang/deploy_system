@@ -10,5 +10,6 @@ app.config['SECRET_KEY']='123123123123123'
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://hoo:hoo123@xx.xx.xx.xx/hoo'
 app.config['CSRF_ENABLED']=True
 app.config['SQLALCHEMY_ECHO']=True
+app.config['SQLALCHEMY_POOL_TIMEOUT']=3600
 app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', True)
 from app import views,models

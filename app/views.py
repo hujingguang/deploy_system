@@ -377,18 +377,14 @@ def check_ssh_passwd(passwd,ip):
         rs=ch.expect(['assword',pexpect.EOF,pexpect.TIMEOUT],timeout=120)
         ch.sendline(passwd)
         rsz=ch.expect(['assword','#',pexpect.EOF,pexpect.TIMEOUT],timeout=120)
-        if rsz == 0:
-            ch.close()
         if rsz == 1:
-            ch.close()
+            #ch.close()
             return True
     if res == 1:
         ch.sendline(passwd)
         rsz=ch.expect(['assword','#',pexpect.EOF,pexpect.TIMEOUT],timeout=120)
-        if rsz == 0:
-            ch.close()
         if rsz == 1:
-            ch.close()
+            #ch.close()
             return True
     return False
 

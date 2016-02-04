@@ -16,7 +16,12 @@
   {{ form.hidden_tag() }}
   <table>
     <tr>
-      <td><b>用户:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+      <!-- <td><b>用户:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> -->
+      <td> <button type="button" class="btn btn-default btn-sm">
+         <span style="color: rgb(19, 140, 60);" class="glyphicon glyphicon-user"> User</span>
+    </button>
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </td>
       <td>{{ form.email(size=20, class="form-control") }}</td>
     </tr>
     <tr>
@@ -24,7 +29,12 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td><b>密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+       <!-- <td><b>密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td> -->
+    <td> <button type="button" class="btn btn-default btn-sm">
+         <span style="color: rgb(19, 140, 60);" class="glyphicon "> Password</span>
+    </button>
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </td>
       <td>{{ form.password(size=20, class="form-control") }}</td>
     </tr>
     <tr>

@@ -29,4 +29,4 @@ init_tables.py 文件包括两个方法：
  4     修改run.py 文件绑定当前主机IP及端口,然后运行 python run.py 即可
 
 
-https://github.com/hujingguang/deploy_system/blob/master/screenshots/1.png
+![](https://github.com/hujingguang/deploy_system/blob/master/screenshots/1.png)
